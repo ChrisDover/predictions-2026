@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 Predictions Tracker - Chris Dover</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --bg-card: #1c2128;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent-green: #3fb950;
+            --accent-red: #f85149;
+            --accent-blue: #58a6ff;
+            --accent-yellow: #d29922;
+            --accent-purple: #a371f7;
+            --accent-orange: #db6d28;
+            --accent-cyan: #39d2c0;
+            --border-color: #30363d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .header-right {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .header-stat {
+            text-align: center;
+        }
+
+        .header-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .header-stat-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+            margin-right: 6px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .last-updated {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Main Layout */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 32px;
+        }
+
+        /* Score Overview */
+        .score-bar {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .score-pip {
+            height: 6px;
+            border-radius: 3px;
+            background: var(--bg-tertiary);
+            transition: background 0.3s;
+        }
+
+        .score-pip.tracking { background: var(--accent-blue); }
+        .score-pip.confirmed { background: var(--accent-green); }
+        .score-pip.failed { background: var(--accent-red); }
+        .score-pip.partial { background: var(--accent-yellow); }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .summary-card .value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .summary-card .label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Filter Tabs */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 6px 14px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+        .filter-btn.active { background: rgba(88, 166, 255, 0.15); border-color: var(--accent-blue); color: var(--accent-blue); }
+
+        /* Prediction Cards */
+        .predictions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .pred-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .pred-card:hover { border-color: var(--accent-blue); }
+
+        .pred-card.status-confirmed { border-left: 4px solid var(--accent-green); }
+        .pred-card.status-tracking { border-left: 4px solid var(--accent-blue); }
+        .pred-card.status-early { border-left: 4px solid var(--accent-yellow); }
+        .pred-card.status-failed { border-left: 4px solid var(--accent-red); }
+        .pred-card.status-not-yet { border-left: 4px solid var(--text-muted); }
+
+        .pred-top {
+            padding: 20px 24px;
+            display: grid;
+            grid-template-columns: 48px 1fr auto;
+            gap: 16px;
+            align-items: start;
+            cursor: pointer;
+        }
+
+        .pred-num {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 800;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .pred-card.status-confirmed .pred-num { background: rgba(63, 185, 80, 0.15); color: var(--accent-green); }
+        .pred-card.status-tracking .pred-num { background: rgba(88, 166, 255, 0.15); color: var(--accent-blue); }
+        .pred-card.status-early .pred-num { background: rgba(210, 153, 34, 0.15); color: var(--accent-yellow); }
+
+        .pred-info h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .pred-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .pred-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            min-width: 160px;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.confirmed { background: rgba(63, 185, 80, 0.15); color: var(--accent-green); }
+        .status-badge.tracking { background: rgba(88, 166, 255, 0.15); color: var(--accent-blue); }
+        .status-badge.early { background: rgba(210, 153, 34, 0.15); color: var(--accent-yellow); }
+        .status-badge.failed { background: rgba(248, 81, 73, 0.15); color: var(--accent-red); }
+        .status-badge.not-yet { background: var(--bg-tertiary); color: var(--text-muted); }
+
+        .confidence-bar-wrap {
+            width: 120px;
+        }
+
+        .confidence-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+
+        .confidence-bar {
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.5s;
+        }
+
+        .confidence-fill.high { background: var(--accent-green); }
+        .confidence-fill.med { background: var(--accent-yellow); }
+        .confidence-fill.low { background: var(--text-muted); }
+
+        /* Expanded Content */
+        .pred-detail {
+            display: none;
+            border-top: 1px solid var(--border-color);
+            padding: 20px 24px;
+        }
+
+        .pred-card.expanded .pred-detail { display: block; }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .detail-section h4 {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        /* Key Metrics */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .kpi-box {
+            background: var(--bg-tertiary);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .kpi-box .val {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .kpi-box .lbl {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Evidence Timeline */
+        .evidence-list {
+            list-style: none;
+        }
+
+        .evidence-item {
+            display: flex;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+            font-size: 13px;
+        }
+
+        .evidence-item:last-child { border-bottom: none; }
+
+        .evidence-date {
+            color: var(--text-muted);
+            font-size: 11px;
+            min-width: 70px;
+            flex-shrink: 0;
+        }
+
+        .evidence-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .evidence-dot.positive { background: var(--accent-green); }
+        .evidence-dot.neutral { background: var(--accent-blue); }
+        .evidence-dot.negative { background: var(--accent-red); }
+
+        .evidence-text {
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Thesis Quote */
+        .thesis-box {
+            background: var(--bg-primary);
+            border-left: 3px solid var(--accent-blue);
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        /* Tags */
+        .tag-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .tag {
+            padding: 3px 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .tag.geo { border: 1px solid rgba(57, 210, 192, 0.3); color: var(--accent-cyan); }
+        .tag.tech { border: 1px solid rgba(163, 113, 247, 0.3); color: var(--accent-purple); }
+        .tag.market { border: 1px solid rgba(210, 153, 34, 0.3); color: var(--accent-yellow); }
+        .tag.energy { border: 1px solid rgba(219, 109, 40, 0.3); color: var(--accent-orange); }
+        .tag.health { border: 1px solid rgba(63, 185, 80, 0.3); color: var(--accent-green); }
+
+        /* Progress Ring */
+        .progress-ring-container {
+            position: relative;
+            width: 48px;
+            height: 48px;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 3;
+        }
+
+        .progress-ring .bg { stroke: var(--bg-tertiary); }
+        .progress-ring .fg { stroke-linecap: round; transition: stroke-dashoffset 0.5s; }
+
+        .progress-pct {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Expand indicator */
+        .expand-icon {
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .pred-card.expanded .expand-icon { transform: rotate(180deg); }
+
+        /* Add Note Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90vw;
+            padding: 24px;
+        }
+
+        .modal h3 {
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+
+        .modal textarea {
+            width: 100%;
+            height: 80px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            padding: 10px;
+            font-family: inherit;
+            font-size: 13px;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+
+        .modal select, .modal input[type="date"] {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            padding: 8px 10px;
+            font-family: inherit;
+            font-size: 13px;
+            margin-bottom: 12px;
+            margin-right: 8px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: #fff;
+            border-color: var(--accent-blue);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-small {
+            padding: 4px 10px;
+            font-size: 11px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .btn-small:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+
+        /* Timeline bar within each prediction */
+        .timeline-bar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .timeline-month {
+            flex: 1;
+            height: 3px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .timeline-month.past { background: var(--accent-blue); opacity: 0.5; }
+        .timeline-month.current { background: var(--accent-blue); }
+        .timeline-month.future { background: var(--bg-tertiary); }
+
+        .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .summary-grid { grid-template-columns: repeat(3, 1fr); }
+            .detail-grid { grid-template-columns: 1fr; }
+            .pred-top { grid-template-columns: 40px 1fr; }
+            .pred-right { flex-direction: row; align-items: center; grid-column: 1 / -1; }
+            .main { padding: 16px; }
+            .header { padding: 12px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-inner">
+        <div class="header-left">
+            <div class="header-logo">P</div>
+            <div>
+                <div class="header-title">2026 Predictions Tracker</div>
+                <div class="header-subtitle">Chris Dover &middot; Published Mar 17, 2026</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="header-stat">
+                <div class="header-stat-value" style="color: var(--accent-green)" id="stat-confirmed">0</div>
+                <div class="header-stat-label">Confirmed</div>
+            </div>
+            <div class="header-stat">
+                <div class="header-stat-value" style="color: var(--accent-blue)" id="stat-tracking">0</div>
+                <div class="header-stat-label">Tracking</div>
+            </div>
+            <div class="header-stat">
+                <div class="header-stat-value" style="color: var(--accent-yellow)" id="stat-early">0</div>
+                <div class="header-stat-label">Early Signs</div>
+            </div>
+            <div class="header-stat">
+                <div class="header-stat-value" style="color: var(--text-muted)" id="stat-pending">0</div>
+                <div class="header-stat-label">Pending</div>
+            </div>
+            <div>
+                <div><span class="live-dot"></span><span style="font-size:12px;">LIVE</span></div>
+                <div class="last-updated" id="last-updated">Updated just now</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main">
+    <!-- Score pips -->
+    <div class="score-bar" id="score-bar"></div>
+
+    <!-- Summary -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="value" style="color: var(--accent-blue)" id="sum-accuracy">--</div>
+            <div class="label">Accuracy Rate</div>
+        </div>
+        <div class="summary-card">
+            <div class="value" id="sum-days-since">1</div>
+            <div class="label">Days Since Published</div>
+        </div>
+        <div class="summary-card">
+            <div class="value" id="sum-days-left">288</div>
+            <div class="label">Days Left in 2026</div>
+        </div>
+        <div class="summary-card">
+            <div class="value" style="color: var(--accent-cyan)" id="sum-evidence">0</div>
+            <div class="label">Evidence Events</div>
+        </div>
+        <div class="summary-card">
+            <div class="value" style="color: var(--accent-purple)" id="sum-conviction">--</div>
+            <div class="label">Avg Conviction</div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All Predictions</button>
+        <button class="filter-btn" data-filter="confirmed">Confirmed</button>
+        <button class="filter-btn" data-filter="tracking">Tracking</button>
+        <button class="filter-btn" data-filter="early">Early Signs</button>
+        <button class="filter-btn" data-filter="not-yet">Pending</button>
+        <button class="filter-btn" data-filter="geo">Geopolitics</button>
+        <button class="filter-btn" data-filter="tech">Technology</button>
+        <button class="filter-btn" data-filter="market">Markets</button>
+        <button class="filter-btn" data-filter="energy">Energy</button>
+        <button class="filter-btn" data-filter="health">Health</button>
+    </div>
+
+    <!-- Predictions -->
+    <div class="predictions-list" id="predictions-list"></div>
+</div>
+
+<!-- Add Evidence Modal -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+        <h3 id="modal-title">Add Evidence</h3>
+        <textarea id="modal-text" placeholder="What happened? Link or describe the event..."></textarea>
+        <div>
+            <select id="modal-sentiment">
+                <option value="positive">Supports prediction</option>
+                <option value="neutral">Neutral / mixed</option>
+                <option value="negative">Contradicts prediction</option>
+            </select>
+            <input type="date" id="modal-date">
+        </div>
+        <div style="margin-top:8px;">
+            <label style="font-size:12px; color: var(--text-secondary);">Update status:</label>
+            <select id="modal-status" style="margin-top:4px;">
+                <option value="">No change</option>
+                <option value="not-yet">Pending</option>
+                <option value="early">Early Signs</option>
+                <option value="tracking">Tracking</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="failed">Failed</option>
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveEvidence()">Save</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ─── Predictions Data ───
+const PREDICTIONS = [
+    {
+        id: 1,
+        title: "Western Hemisphere becomes the default US supply chain",
+        subtitle: "Faster than anyone models. LATAM holds 60% lithium, 40% copper, largest proven oil reserves.",
+        thesis: "The US has deployed over $1B into Latin American critical minerals since Jan 2025. Signed Shield of the Americas with 17 countries. China getting cut out of processing chains. Strait of Hormuz contested. By December 'Western Hemisphere supply chain' is as common in boardrooms as 'nearshoring' was two years ago.",
+        status: "tracking",
+        conviction: 95,
+        tags: ["geo", "market"],
+        kpis: [
+            { label: "US LATAM Investment", value: "$1B+", trend: "up" },
+            { label: "Shield Countries", value: "17", trend: "stable" },
+            { label: "Hormuz Risk", value: "HIGH", trend: "up" }
+        ],
+        evidence: [
+            { date: "2026-03-17", text: "Prediction published. $1B+ already deployed into LATAM critical minerals since Jan 2025.", sentiment: "positive" },
+            { date: "2026-03-17", text: "Shield of the Americas signed with 17 countries. EU signed Mercosur.", sentiment: "positive" },
+            { date: "2026-03-17", text: "Strait of Hormuz contested - Iran hitting tankers across 15 Gulf states.", sentiment: "positive" }
+        ]
+    },
+    {
+        id: 2,
+        title: "AI coding agents cross the threshold",
+        subtitle: "Most new production code at major tech companies is AI-generated, human-supervised.",
+        thesis: "By end of year, the balance tips. More than half of new shipped code at Anthropic, Google, Meta, Stripe is written by AI agents with humans reviewing. The barrier to building software drops to near zero. A person with a clear idea and basic technical literacy can build a real product.",
+        status: "tracking",
+        conviction: 90,
+        tags: ["tech"],
+        kpis: [
+            { label: "AI Code Share", value: ">50%?", trend: "up" },
+            { label: "Claude Code Users", value: "Growing", trend: "up" },
+            { label: "Solo Builders", value: "Expanding", trend: "up" }
+        ],
+        evidence: [
+            { date: "2026-03-17", text: "Chris built entire trading infrastructure, intelligence platform, and multiple web apps using AI coding tools. No engineering team.", sentiment: "positive" },
+            { date: "2026-03-17", text: "Anthropic ships Claude Code, Opus 4.6 with 1M context. Coding agents are production-ready.", sentiment: "positive" }
+        ]
+    },
+    {
+        id: 3,
+        title: "Application layer massacre begins",
+        subtitle: "Companies that survive have physical-world moats or proprietary data. Foundation models ship capabilities that kill startups.",
+        thesis: "When Claude releases a legal skill, what happens to Harvey? When it ships cybersecurity, how many startups just became features? A trillion dollars in market cap can evaporate because one of five companies decided to ship a new capability on a Tuesday. Recursive self-improvement is real. The models are building themselves.",
+        status: "early",
+        conviction: 85,
+        tags: ["tech", "market"],
+        kpis: [
+            { label: "AI Startup Failures", value: "TBD", trend: "stable" },
+            { label: "Foundation Skills", value: "Growing", trend: "up" },
+            { label: "Best Models", value: "Internal", trend: "stable" }
+        ],
+        evidence: [
+            { date: "2026-03-17", text: "Model Anthropic used to build Opus 4.6 was not Opus 4.5 - something better, never released publicly.", sentiment: "positive" },
+            { date: "2026-03-17", text: "Math Olympiad winning model never released to public. Best models stay inside the walls.", sentiment: "positive" }
+        ]
+    },
+    {
+        id: 4,
+        title: "LATAM equities outperform US equities for the full calendar year",
+        subtitle: "Financial media cannot explain why. Multi-year rotation beginning.",
+        thesis: "LATAM stocks already led global returns in early 2026. Commodity demand from AI buildout + US strategic capital + political moderation + cheap valuations. Narrative requires holding three ideas simultaneously - most commentators can only hold one.",
+        status: "early",
+        conviction: 80,
+        tags: ["market", "geo"],
+        kpis: [
+            { label: "ILF (LATAM ETF)", value: "--", trend: "stable" },
+            { label: "SPY YTD", value: "--", trend: "stable" },
+            { label: "Spread", value: "--", trend: "stable" }
+        ],
+        evidence: [
+            { date: "2026-03-17", text: "LATAM stocks led global returns in early 2026. Most analysts treated it as a blip.", sentiment: "positive" }
+        ]
+    },
+    {
+        id: 5,
+        title: "AI energy demand exceeds every 2025 forecast",
+        subtitle: "Countries that supply power become new strategic priorities. LATAM renewable base is a competitive advantage.",
+        thesis: "Every estimate of AI power consumption from a year ago is already wrong. Digital infrastructure investment in LATAM hit $14B in 2024 (+111% in 5 years). New platforms deploying $1.5B into AI infrastructure across Brazil, Mexico, Chile. LATAM's renewable energy base attracts hundreds of billions in compute investment.",
+        status: "tracking",
+        conviction: 88,
+        tags: ["energy", "tech", "geo"],
+        kpis: [
+            { label: "LATAM DC Investment", value: "$14B", trend: "up" },
+            { label: "AI Infra Deploy", value: "$1.5B", trend: "up" },
+            { label: "Renewable Share", value: "62.5%", trend: "stable" }
+        ],
+        evidence: [
+            { date: "2026-03-17", text: "A single large datacenter consumes more electricity than Colombia and Argentina combined.", sentiment: "positive" },
+            { date: "2026-03-17", text: "Digital infrastructure investment in LATAM hit $14B in 2024, up 111% in five years.", sentiment: "positive" }
+        ]
+    },
+    {
+        id: 6,
+        title: "Neuralink production ramp becomes biggest medical story of the year",
+        subtitle: "From 21 patients to hundreds, potentially thousands. Automated surgical procedures.",
+        thesis: "Paralyzed people regaining independence. Families reconnecting with loved ones who lost ability to communicate. Every implant produces training data that makes the next one better - recursive improvement in the physical world. If BCI replaces decades of assisted living with restored independence, healthcare savings measured in billions.",
+        status: "early",
+        conviction: 75,
+        tags: ["tech", "health"],
+        kpis: [
+            { label: "Patients", value: "21", trend: "stable" },
+            { label: "Target EOY", value: "100s-1000s", trend: "up" },
+            { label: "FDA Status", value: "Approved", trend: "stable" }
+        ],
+        evidence: [
+            { date: "2026-03-17", text: "Currently at 21 patients with implants. Production ramp planned for 2026.", sentiment: "neutral" }
+        ]
+    },
+    {
+        id: 7,
+        title: "Autonomous agents managing real money produce institutional-grade track records",
+        subtitle: "AI agents with direct trading authority produce 12+ months of auditable returns.",
+        thesis: "Not hedge funds using AI for research. AI agents with direct trading authority, managing portfolios, producing auditable performance data. Several will have 12+ months of returns good enough that institutions cannot ignore them. Systematic approaches previously only available to top quant shops become accessible at basis points instead of 2-and-20.",
+        status: "tracking",
+        conviction: 85,
+        tags: ["tech", "market"],
+        kpis: [
+            { label: "Active Agents", value: "Growing", trend: "up" },
+            { label: "Track Record", value: "Building", trend: "up" },
+            { label: "Inst. Adoption", value: "Early", trend: "stable" }
+        ],
+        evidence: [
+            { date: "2026-03-17", text: "Chris running autonomous trading agents (Hydra) with direct trading authority on live markets.", sentiment: "positive" },
+            { date: "2026-03-17", text: "Some AI trading agents already running and producing auditable performance data.", sentiment: "positive" }
+        ]
+    },
+    {
+        id: 8,
+        title: "Starlink direct-to-cell goes live in enough markets to change rural economics",
+        subtitle: "10M subs heading to 18-25M by year end. Direct-to-cell means no dish needed.",
+        thesis: "A farmer in Peruvian highlands or mining operation in rural Brazil having reliable connectivity for the first time. Real-time data flows enable precision agriculture, remote monitoring, mobile financial services for previously excluded populations. Information asymmetry that made LATAM investing risky starts to narrow.",
+        status: "tracking",
+        conviction: 82,
+        tags: ["tech", "geo"],
+        kpis: [
+            { label: "Subscribers", value: "~10M", trend: "up" },
+            { label: "Target EOY", value: "18-25M", trend: "up" },
+            { label: "D2C Markets", value: "Expanding", trend: "up" }
+        ],
+        evidence: [
+            { date: "2026-03-17", text: "10 million subscribers heading toward 18-25 million by year end. New countries lighting up weekly.", sentiment: "positive" }
+        ]
+    },
+    {
+        id: 9,
+        title: "First credible age-reversal clinical results hit mainstream consciousness",
+        subtitle: "GLP-1 expanding to cognitive/longevity. Epigenetic reprogramming results from multiple biotech companies.",
+        thesis: "2026 is the year serious people treat biological age reversal as real instead of Silicon Valley fantasy. Pet market moves first - oral GLP-1 for pet obesity likely gets broader approval. If healthy lifespan extends by 5-10 years, every actuarial table needs rewriting.",
+        status: "early",
+        conviction: 70,
+        tags: ["health", "tech"],
+        kpis: [
+            { label: "GLP-1 Expansion", value: "Active", trend: "up" },
+            { label: "Pet GLP-1", value: "Pending", trend: "stable" },
+            { label: "Epigenetic Trials", value: "Multiple", trend: "up" }
+        ],
+        evidence: [
+            { date: "2026-03-17", text: "GLP-1 drugs expanding into cognitive and longevity applications. AI-driven drug discovery compressing timelines.", sentiment: "neutral" }
+        ]
+    },
+    {
+        id: 10,
+        title: "Creator-to-founder pipeline becomes dominant path for new business formation",
+        subtitle: "Domain experts with audiences + AI tools = companies without VC, teams, or offices.",
+        thesis: "Infrastructure costs near zero. AI handles code, design, data analysis. Human provides insight, relationships, judgment. By end of 2026, most interesting new companies are coming from domain experts with audiences who decided to build, not accelerators with $500K checks.",
+        status: "tracking",
+        conviction: 85,
+        tags: ["tech", "market"],
+        kpis: [
+            { label: "Solo Founders", value: "Rising", trend: "up" },
+            { label: "AI Tool Cost", value: "Near $0", trend: "down" },
+            { label: "YC Competition", value: "Growing", trend: "up" }
+        ],
+        evidence: [
+            { date: "2026-03-17", text: "Chris building investment platform, intelligence firm, and trading signals business simultaneously with AI tools and 25 years domain expertise.", sentiment: "positive" }
+        ]
+    }
+];
+
+// ─── State Management ───
+const STORAGE_KEY = 'predictions_2026_tracker';
+
+function loadState() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            // Merge saved evidence and status updates into predictions
+            parsed.forEach(saved => {
+                const pred = PREDICTIONS.find(p => p.id === saved.id);
+                if (pred) {
+                    if (saved.status) pred.status = saved.status;
+                    if (saved.evidence) pred.evidence = saved.evidence;
+                    if (saved.kpis) pred.kpis = saved.kpis;
+                }
+            });
+        } catch(e) { console.error('Failed to load state', e); }
+    }
+}
+
+function saveState() {
+    const state = PREDICTIONS.map(p => ({
+        id: p.id,
+        status: p.status,
+        evidence: p.evidence,
+        kpis: p.kpis
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+// ─── Rendering ───
+function getStatusLabel(status) {
+    const map = {
+        'confirmed': 'Confirmed',
+        'tracking': 'Tracking',
+        'early': 'Early Signs',
+        'failed': 'Failed',
+        'not-yet': 'Pending'
+    };
+    return map[status] || status;
+}
+
+function getMonthIndex(date) {
+    return new Date(date).getMonth(); // 0=Jan
+}
+
+function renderTimelineBar(predEvidence) {
+    const now = new Date();
+    const currentMonth = now.getMonth(); // 0-based, March = 2
+    const months = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+
+    // Find months with evidence
+    const evidenceMonths = new Set();
+    predEvidence.forEach(e => evidenceMonths.add(getMonthIndex(e.date)));
+
+    let html = '<div class="timeline-bar">';
+    for (let i = 0; i < 12; i++) {
+        let cls = 'timeline-month';
+        if (i < currentMonth) cls += ' past';
+        else if (i === currentMonth) cls += ' current';
+        else cls += ' future';
+        html += `<div class="${cls}" title="${months[i]}"></div>`;
+    }
+    html += '</div>';
+    html += '<div class="timeline-labels"><span>Jan</span><span>Mar</span><span>Jun</span><span>Sep</span><span>Dec</span></div>';
+    return html;
+}
+
+function renderPrediction(pred) {
+    const confClass = pred.conviction >= 85 ? 'high' : pred.conviction >= 70 ? 'med' : 'low';
+
+    const evidenceHtml = pred.evidence
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .map(e => `
+            <li class="evidence-item">
+                <span class="evidence-date">${formatDate(e.date)}</span>
+                <span class="evidence-dot ${e.sentiment}"></span>
+                <span class="evidence-text">${e.text}</span>
+            </li>
+        `).join('');
+
+    const kpiHtml = pred.kpis.map(k => {
+        const trendIcon = k.trend === 'up' ? '&#9650;' : k.trend === 'down' ? '&#9660;' : '&#8212;';
+        const trendColor = k.trend === 'up' ? 'var(--accent-green)' : k.trend === 'down' ? 'var(--accent-red)' : 'var(--text-muted)';
+        return `
+            <div class="kpi-box">
+                <div class="val">${k.value} <span style="font-size:10px;color:${trendColor}">${trendIcon}</span></div>
+                <div class="lbl">${k.label}</div>
+            </div>
+        `;
+    }).join('');
+
+    const tagsHtml = pred.tags.map(t => `<span class="tag ${t}">${t}</span>`).join('');
+
+    return `
+        <div class="pred-card status-${pred.status}" data-id="${pred.id}" data-tags="${pred.tags.join(',')}" data-status="${pred.status}">
+            <div class="pred-top" onclick="toggleCard(${pred.id})">
+                <div class="pred-num">${pred.id}</div>
+                <div class="pred-info">
+                    <h3>${pred.title}</h3>
+                    <div class="pred-subtitle">${pred.subtitle}</div>
+                    <div class="tag-row">${tagsHtml}</div>
+                </div>
+                <div class="pred-right">
+                    <span class="status-badge ${pred.status}">${getStatusLabel(pred.status)}</span>
+                    <div class="confidence-bar-wrap">
+                        <div class="confidence-label"><span>Conviction</span><span>${pred.conviction}%</span></div>
+                        <div class="confidence-bar"><div class="confidence-fill ${confClass}" style="width:${pred.conviction}%"></div></div>
+                    </div>
+                    <span class="expand-icon">&#9660;</span>
+                </div>
+            </div>
+            <div class="pred-detail">
+                <div class="thesis-box">"${pred.thesis}"</div>
+                <div class="kpi-row">${kpiHtml}</div>
+                ${renderTimelineBar(pred.evidence)}
+                <div class="detail-grid" style="margin-top:16px;">
+                    <div class="detail-section">
+                        <h4>Evidence Timeline (${pred.evidence.length} events)</h4>
+                        <ul class="evidence-list">${evidenceHtml}</ul>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Actions</h4>
+                        <button class="btn-small" onclick="openModal(${pred.id})" style="margin-bottom:8px;">+ Add Evidence</button>
+                        <button class="btn-small" onclick="updateStatus(${pred.id})" style="margin-bottom:8px;">Change Status</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}`;
+}
+
+function renderAll() {
+    const list = document.getElementById('predictions-list');
+    list.innerHTML = PREDICTIONS.map(renderPrediction).join('');
+    updateStats();
+    renderScoreBar();
+}
+
+function updateStats() {
+    const counts = { confirmed: 0, tracking: 0, early: 0, 'not-yet': 0, failed: 0 };
+    let totalEvidence = 0;
+    let totalConviction = 0;
+
+    PREDICTIONS.forEach(p => {
+        counts[p.status] = (counts[p.status] || 0) + 1;
+        totalEvidence += p.evidence.length;
+        totalConviction += p.conviction;
+    });
+
+    document.getElementById('stat-confirmed').textContent = counts.confirmed;
+    document.getElementById('stat-tracking').textContent = counts.tracking;
+    document.getElementById('stat-early').textContent = counts.early;
+    document.getElementById('stat-pending').textContent = (counts['not-yet'] || 0);
+
+    // Days
+    const published = new Date('2026-03-17');
+    const now = new Date();
+    const eoy = new Date('2026-12-31');
+    const daysSince = Math.floor((now - published) / 86400000);
+    const daysLeft = Math.floor((eoy - now) / 86400000);
+    document.getElementById('sum-days-since').textContent = daysSince;
+    document.getElementById('sum-days-left').textContent = daysLeft;
+
+    // Accuracy
+    const resolved = counts.confirmed + counts.failed;
+    if (resolved > 0) {
+        document.getElementById('sum-accuracy').textContent = Math.round(counts.confirmed / resolved * 100) + '%';
+    } else {
+        document.getElementById('sum-accuracy').textContent = '--';
+    }
+
+    document.getElementById('sum-evidence').textContent = totalEvidence;
+    document.getElementById('sum-conviction').textContent = Math.round(totalConviction / PREDICTIONS.length) + '%';
+}
+
+function renderScoreBar() {
+    const bar = document.getElementById('score-bar');
+    bar.innerHTML = PREDICTIONS.map(p => `<div class="score-pip ${p.status}" title="#${p.id}: ${getStatusLabel(p.status)}"></div>`).join('');
+}
+
+// ─── Interactions ───
+function toggleCard(id) {
+    const card = document.querySelector(`.pred-card[data-id="${id}"]`);
+    card.classList.toggle('expanded');
+}
+
+let modalPredId = null;
+function openModal(id) {
+    modalPredId = id;
+    const pred = PREDICTIONS.find(p => p.id === id);
+    document.getElementById('modal-title').textContent = `Add Evidence: #${id}`;
+    document.getElementById('modal-text').value = '';
+    document.getElementById('modal-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('modal-sentiment').value = 'positive';
+    document.getElementById('modal-status').value = '';
+    document.getElementById('modal-overlay').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('active');
+    modalPredId = null;
+}
+
+function saveEvidence() {
+    if (!modalPredId) return;
+    const pred = PREDICTIONS.find(p => p.id === modalPredId);
+    const text = document.getElementById('modal-text').value.trim();
+    if (!text) return;
+
+    pred.evidence.push({
+        date: document.getElementById('modal-date').value,
+        text: text,
+        sentiment: document.getElementById('modal-sentiment').value
+    });
+
+    const newStatus = document.getElementById('modal-status').value;
+    if (newStatus) pred.status = newStatus;
+
+    saveState();
+    renderAll();
+    closeModal();
+    // Re-expand the card
+    setTimeout(() => {
+        const card = document.querySelector(`.pred-card[data-id="${modalPredId}"]`);
+        if (card) card.classList.add('expanded');
+    }, 50);
+}
+
+function updateStatus(id) {
+    openModal(id);
+    document.getElementById('modal-text').value = 'Status update';
+    document.getElementById('modal-text').focus();
+}
+
+// ─── Filtering ───
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+
+        document.querySelectorAll('.pred-card').forEach(card => {
+            if (filter === 'all') {
+                card.style.display = '';
+            } else if (['confirmed','tracking','early','not-yet','failed'].includes(filter)) {
+                card.style.display = card.dataset.status === filter ? '' : 'none';
+            } else {
+                // Tag filter
+                card.style.display = card.dataset.tags.includes(filter) ? '' : 'none';
+            }
+        });
+    });
+});
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeModal();
+});
+
+// ─── Init ───
+loadState();
+renderAll();
+
+// Update timestamp
+setInterval(() => {
+    document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+}, 60000);
+</script>
+</body>
+</html>
